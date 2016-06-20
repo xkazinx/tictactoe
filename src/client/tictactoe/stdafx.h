@@ -17,6 +17,7 @@
 #include <tdef.h>
 #include "SFGUI/SFGUI.hpp"
 #include "SFML/Graphics.hpp"
-
+#include <ctime.h>
+extern Time Clock;
 #define res_x 800
 #define res_y 600

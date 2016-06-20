@@ -3,10 +3,14 @@
 #include "Driver.h"
 #include <thread>
 #include <chrono>
+#include "GUI.h"
+#include "Scene.h"
 
 void App::init()
 {
+	g_ui.init();
 	g_wnd.init();
+	g_scene.init();
 
 	_view = g_wnd.get()->getDefaultView();
 	_static_view = g_wnd.get()->getDefaultView();
@@ -20,15 +24,9 @@ void App::loop()
 
 	while (wnd->isOpen())
 	{
+		Clock.seed();
 		tick();
-
-
-		sf::Event event;
-		while (wnd->pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				wnd->close();
-		}
+		handle_events();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
@@ -38,8 +36,34 @@ void App::tick()
 	auto wnd = g_wnd.get();
 
 	wnd->clear(sf::Color::Black);
-	sf::CircleShape asd(30.f);
-	asd.setFillColor(sf::Color::Red);
-	wnd->draw(asd);
+	draw();
 	wnd->display();
+}
+
+void App::handle_events()
+{
+	auto wnd = g_wnd.get();
+
+	sf::Event event;
+	while (wnd->pollEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+			wnd->close();
+
+		g_scene.handle_event(event);
+		g_ui._desk.HandleEvent(event);
+	}
+}
+
+void App::draw()
+{
+	static Time::Val frametime = Clock.now() - 1000 / 60;
+	if (!Clock.elapsed(frametime, 1000 / 60)) {
+		return;
+	}
+
+	auto wnd = g_wnd.get();
+	wnd->draw(g_scene);
+	wnd->draw(g_ui);
+	g_ui._desk.Update(Clock.deltaf());
 }
