@@ -15,7 +15,8 @@ Scene::~Scene()
 }
 
 void Scene::Handler::init() {
-	m_list[ID::Main] = uMake<SMain>();
+	s_main = new SMain;
+	m_list[ID::Main].reset(s_main);
 	//g_game = new class Game;
 	//m_list[ID::Game].reset(g_game);
 	set(ID::Main);
@@ -43,6 +44,7 @@ void Scene::Handler::clear() {
 		p.reset();
 
 	_ptr = nullptr;
+	s_main = nullptr;
 }
 
 Scene * Scene::Handler::get()

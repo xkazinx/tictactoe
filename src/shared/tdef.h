@@ -32,7 +32,14 @@ typedef std::ofstream ofstream;
 #define _IP "127.0.0.1"
 #define _PORT 6987
 
+#define stdremove(list, func) list.erase(std::remove_if(list.begin(), list.end(), func), list.end());
+
 enum class Msg
 {
 	Auth,
+	Players,
+	PlayerExists,
+	SelectPlayer,
+	StartGame,
+	Position,
 };

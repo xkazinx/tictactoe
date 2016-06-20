@@ -9,6 +9,7 @@
 
 void App::init()
 {
+	g_net.init();
 	g_ui.init();
 	g_wnd.init();
 	g_scene.init();

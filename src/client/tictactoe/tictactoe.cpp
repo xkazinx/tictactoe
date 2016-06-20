@@ -21,6 +21,12 @@ Time Clock;
 #include "Net.h"
 Net g_net;
 
+#include "SMain.h"
+SMain * s_main;
+
+#include "Player.h"
+Player g_player;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	g_app.init();

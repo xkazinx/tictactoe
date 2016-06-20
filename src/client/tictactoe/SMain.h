@@ -18,6 +18,8 @@ public:
 		LogIn,
 		Connecting,
 		Select,
+		Msg,
+		Game,
 		Max
 	};
 	sfg::Window::Ptr _wnds[(int)Windows::Max];
@@ -26,9 +28,29 @@ public:
 	enum class ButtonID
 	{
 		LogIn,
+		Msg_Ok,
 
 	};
 	void click(ButtonID id);
+	void enter_lobby();
 
+	Vector<string> _players;
+
+	sfg::Box::Ptr _scroll_box;
+	sfg::Label::Ptr _msg_content;
+	sfg::Frame::Ptr _msg_title;
+	void set_notify(string title, string txt);
+	void not_playerexists();
+	void SelectPlayer(string name);
+	void not_startgame(InPacket * in);
+
+	sfg::Button::Ptr _btn[3][3];
+	void SelectPosition(int x, int y);
+
+	sfg::Label::Ptr _turn_label;
+	bool _is_turn;
+	void update_turn_label();
+	string _identifier;
 };
 
+extern SMain * s_main;
