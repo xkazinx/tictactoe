@@ -18,6 +18,9 @@ Scene::Handler g_scene; //Scene manager
 #include <ctime.h>
 Time Clock;
 
+#include "Net.h"
+Net g_net;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	g_app.init();

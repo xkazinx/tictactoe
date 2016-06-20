@@ -21,3 +21,8 @@
 extern Time Clock;
 #define res_x 800
 #define res_y 600
+#include "enet/enet.h"
+#include "packet.h"
+#include "enet/Socket.h"
+#include <iostream>
+#define cout std::cout

@@ -28,3 +28,11 @@ typedef std::ifstream ifstream;
 typedef std::ofstream ofstream;
 #define _WINSOCK2API_
 #include <windows.h>
+
+#define _IP "127.0.0.1"
+#define _PORT 6987
+
+enum class Msg
+{
+	Auth,
+};

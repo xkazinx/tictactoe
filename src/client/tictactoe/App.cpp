@@ -5,6 +5,7 @@
 #include <chrono>
 #include "GUI.h"
 #include "Scene.h"
+#include "Net.h"
 
 void App::init()
 {
@@ -27,6 +28,7 @@ void App::loop()
 	while (wnd->isOpen())
 	{
 		Clock.seed();
+		g_net.tick();
 		tick();
 		handle_events();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

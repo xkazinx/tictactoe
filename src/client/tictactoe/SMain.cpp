@@ -2,6 +2,7 @@
 #include "SMain.h"
 #include "SFGUI/Widgets.hpp"
 #include "GUI.h"
+#include "Net.h"
 
 #define btn_click(btn, btnid) btn->GetSignal(sfg::Widget::OnLeftClick).Connect(std::bind(&SMain::click, this, ButtonID::btnid));
 
@@ -82,6 +83,7 @@ void SMain::click(ButtonID id)
 
 		toggle_window(getWnd(Windows::LogIn), false);
 		toggle_window(getWnd(Windows::Connecting), true);
+		g_net._sock.connect();
 		break;
 	}
 }
