@@ -79,6 +79,15 @@ void Scene::draw(sf::RenderTarget & target, sf::RenderStates states) const {
 	display();
 }
 
-
-
-
+void Scene::toggle_window(sfg::Window::Ptr & wnd, bool flag) {
+	wnd->Show(flag);
+	/*if (!flag) {
+		uievent_false();
+	}
+	else {
+		if (get_window_size(wnd).contains(Mouse::getVfPos()))
+		{
+			uievent_true();
+		}
+	}*/
+}

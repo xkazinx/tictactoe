@@ -10,6 +10,7 @@ public:
 	void handle_events();
 	void draw();
 	sf::View _view, _static_view;
+	sf::Text _dummy_text;
 };
 
 extern App g_app;

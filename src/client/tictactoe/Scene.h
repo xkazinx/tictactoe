@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include "SFGUI/Widgets.hpp"
 
 class Scene : public sf::Drawable
 {
@@ -22,7 +23,7 @@ public:
 	virtual void display() const = 0;
 	virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 	virtual void handle_event(sf::Event & event) {}
-
+	void toggle_window(sfg::Window::Ptr & wnd, bool flag);
 	sf::RenderWindow * _wnd;
 
 	class Handler : public sf::Drawable{
