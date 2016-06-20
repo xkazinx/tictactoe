@@ -20,6 +20,7 @@ public:
 		Select,
 		Msg,
 		Game,
+		Winner,
 		Max
 	};
 	sfg::Window::Ptr _wnds[(int)Windows::Max];
@@ -29,8 +30,10 @@ public:
 	{
 		LogIn,
 		Msg_Ok,
-
+		PlayAgain,
+		Lobby,
 	};
+
 	void click(ButtonID id);
 	void enter_lobby();
 
@@ -54,6 +57,12 @@ public:
 	void not_position(InPacket * in);
 	void not_playeringame();
 	Msg _last_msg;
+	bool _game_finished;
+	void not_winner(InPacket * in);
+	string _winner_name;
+	void not_golobby();
+	sfg::Label::Ptr _end_label;
+	void not_gameended();
 };
 
 extern SMain * s_main;

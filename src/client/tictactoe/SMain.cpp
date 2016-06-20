@@ -130,7 +130,7 @@ void SMain::initialize() {
 	{
 		auto & wnd = getWnd(Windows::Game);
 		wnd = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
-		wnd->SetRequisition(sf::Vector2f(500, 500));
+		wnd->SetRequisition(sf::Vector2f(500, 300));
 		wnd->SetPosition(sf::Vector2f(res_x / 2 - 500/2, res_y / 2 - 500/2));
 		g_ui._desk.Add(wnd);
 		wnd->Show(false);
@@ -162,6 +162,28 @@ void SMain::initialize() {
 		_turn_label = sfg::Label::Create("");
 		box->Pack(table);
 		box->Pack(_turn_label);
+		wnd->Add(box);
+	}
+
+
+	{
+		auto & wnd = getWnd(Windows::Winner);
+		wnd = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
+		wnd->SetRequisition(sf::Vector2f(200, 150));
+		wnd->SetPosition(sf::Vector2f(res_x / 2 - 200 / 2, 450));
+		g_ui._desk.Add(wnd);
+		wnd->Show(false);
+
+		auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		_end_label = sfg::Label::Create(" ");
+		box->Pack(_end_label);
+		auto btn = sfg::Button::Create("Play Again");
+		auto btn2 = sfg::Button::Create("Go to Lobby");
+		btn_click(btn, PlayAgain);
+		btn_click(btn2, Lobby);
+
+		box->Pack(btn);
+		box->Pack(btn2);
 		wnd->Add(box);
 	}
 }
@@ -198,6 +220,21 @@ void SMain::click(ButtonID id)
 			toggle_window(getWnd(Windows::Select), true);
 		}
 		break;
+
+	case ButtonID::PlayAgain:
+	{
+		OutPacket out(8);
+		out.write(Msg::PlayAgain);
+		g_net.send(&out);
+		break;
+	}
+	case ButtonID::Lobby:
+	{
+		OutPacket out(8);
+		out.write(Msg::GoLobby);
+		g_net.send(&out);
+		break;
+	}
 	}
 }
 
@@ -234,6 +271,16 @@ void SMain::not_playerexists()
 
 void SMain::not_startgame(InPacket * in)
 {
+	toggle_window(getWnd(SMain::Windows::Select), false);
+	for (int x = 0; x < 3; x++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			_btn[x][y]->SetLabel("");
+		}
+	}
+
+	_game_finished = false;
 	bool turn1, turn2;
 	string name1, name2;
 	in->read(name1, turn1, name2, turn2);
@@ -270,6 +317,9 @@ void SMain::not_startgame(InPacket * in)
 
 void SMain::SelectPosition(int x, int y)
 {
+	if (_game_finished)
+		return;
+
 	if (!_is_turn)
 		return;
 
@@ -316,6 +366,7 @@ void SMain::not_position(InPacket * in)
 		{
 			string identifier;
 			in->read(identifier);
+			cout << x << "/" << y << "Received identifier " << identifier << std::endl;
 			_btn[x][y]->SetLabel(identifier);
 		}
 	}
@@ -328,4 +379,47 @@ void SMain::not_playeringame()
 	set_notify("Cannot start game", "The player you selected is already on a game. Please wait or select another.");
 	toggle_window(getWnd(SMain::Windows::Connecting), false);
 	toggle_window(getWnd(SMain::Windows::Msg), true);
+}
+
+void SMain::not_winner(InPacket * in)
+{
+	in->read(_winner_name);
+
+	_game_finished = true;
+	string s = _winner_name + " won the game!";
+	_turn_label->SetText(s);
+
+	string s2 = "The game has finished, " + _winner_name + " won!";
+	_end_label->SetText(s2);
+
+	toggle_window(getWnd(Windows::Winner), true);
+	//toggle_window(getWnd(Windows::Game), false);
+
+	getWnd(Windows::Winner)->SetHierarchyLevel(0);
+}
+
+void SMain::not_golobby()
+{
+	_game_finished = false;
+	_winner_name = "";
+	_is_turn = false;
+
+	toggle_window(getWnd(Windows::Winner), false);
+	toggle_window(getWnd(Windows::Game), false);
+	toggle_window(getWnd(Windows::Select), true);
+}
+
+void SMain::not_gameended()
+{
+
+	_game_finished = true;
+	string s = "The game finished!";
+	_turn_label->SetText(s);
+
+	string s2 = "The game has finished, there was no winner";
+	_end_label->SetText(s2);
+
+	toggle_window(getWnd(Windows::Winner), true);
+	//toggle_window(getWnd(Windows::Game), false);
+	getWnd(Windows::Winner)->SetHierarchyLevel(0);
 }

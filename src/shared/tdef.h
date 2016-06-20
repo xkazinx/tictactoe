@@ -43,4 +43,8 @@ enum class Msg
 	StartGame,
 	Position,
 	PlayerInGame,
+	Winner,
+	PlayAgain,
+	GoLobby,
+	GameEnded,
 };
