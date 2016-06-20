@@ -51,6 +51,9 @@ public:
 	bool _is_turn;
 	void update_turn_label();
 	string _identifier;
+	void not_position(InPacket * in);
+	void not_playeringame();
+	Msg _last_msg;
 };
 
 extern SMain * s_main;

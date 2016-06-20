@@ -42,4 +42,5 @@ enum class Msg
 	SelectPlayer,
 	StartGame,
 	Position,
+	PlayerInGame,
 };

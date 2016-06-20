@@ -133,7 +133,7 @@ void SMain::initialize() {
 		wnd->SetRequisition(sf::Vector2f(500, 500));
 		wnd->SetPosition(sf::Vector2f(res_x / 2 - 500/2, res_y / 2 - 500/2));
 		g_ui._desk.Add(wnd);
-		//wnd->Show(false);
+		wnd->Show(false);
 
 		auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
 		auto table = sfg::Table::Create();
@@ -187,8 +187,16 @@ void SMain::click(ButtonID id)
 	}
 
 	case ButtonID::Msg_Ok:
-		toggle_window(getWnd(Windows::Msg), false);
-		toggle_window(getWnd(Windows::LogIn), true);
+		if (_last_msg == Msg::PlayerExists)
+		{
+			toggle_window(getWnd(Windows::Msg), false);
+			toggle_window(getWnd(Windows::LogIn), true);
+		}
+		else if (_last_msg == Msg::PlayerInGame)
+		{
+			toggle_window(getWnd(Windows::Msg), false);
+			toggle_window(getWnd(Windows::Select), true);
+		}
 		break;
 	}
 }
@@ -236,7 +244,7 @@ void SMain::not_startgame(InPacket * in)
 	else name = name1;
 	g_player._to_name = name;
 
-	if (name1 == name)
+	if (name1 == g_player._name)
 	{
 		_is_turn = turn1;
 	}
@@ -262,6 +270,13 @@ void SMain::not_startgame(InPacket * in)
 
 void SMain::SelectPosition(int x, int y)
 {
+	if (!_is_turn)
+		return;
+
+	string s = _btn[x][y]->GetLabel();
+	if (s == "X" || s == "O")
+		return;
+
 	cout << "Selecciono posicion " << x << y << std::endl;
 	OutPacket out(16);
 	out.write(Msg::Position, x, y);
@@ -278,4 +293,39 @@ void SMain::update_turn_label()
 		s = "It's your opponent's turn";
 
 	_turn_label->SetText(s);
+}
+
+void SMain::not_position(InPacket * in)
+{
+	string name1, name2;
+	bool turn1, turn2;
+	in->read(name1, turn1, name2, turn2);
+
+	if (name1 == g_player._name)
+	{
+		_is_turn = turn1;
+	}
+	else
+	{
+		_is_turn = turn2;
+	}
+
+	for (int x = 0; x < 3; x++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			string identifier;
+			in->read(identifier);
+			_btn[x][y]->SetLabel(identifier);
+		}
+	}
+
+	update_turn_label();
+}
+
+void SMain::not_playeringame()
+{
+	set_notify("Cannot start game", "The player you selected is already on a game. Please wait or select another.");
+	toggle_window(getWnd(SMain::Windows::Connecting), false);
+	toggle_window(getWnd(SMain::Windows::Msg), true);
 }
