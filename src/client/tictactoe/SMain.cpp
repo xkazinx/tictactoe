@@ -170,7 +170,7 @@ void SMain::initialize() {
 		auto & wnd = getWnd(Windows::Winner);
 		wnd = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
 		wnd->SetRequisition(sf::Vector2f(200, 150));
-		wnd->SetPosition(sf::Vector2f(res_x / 2 - 200 / 2, 450));
+		wnd->SetPosition(sf::Vector2f(res_x / 2 - 200 / 2, 375));
 		g_ui._desk.Add(wnd);
 		wnd->Show(false);
 
@@ -411,7 +411,6 @@ void SMain::not_golobby()
 
 void SMain::not_gameended()
 {
-
 	_game_finished = true;
 	string s = "The game finished!";
 	_turn_label->SetText(s);

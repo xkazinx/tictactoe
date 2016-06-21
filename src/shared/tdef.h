@@ -29,7 +29,7 @@ typedef std::ofstream ofstream;
 #define _WINSOCK2API_
 #include <windows.h>
 
-#define _IP "127.0.0.1"
+#define _IP "74.91.121.41"
 #define _PORT 6987
 
 #define stdremove(list, func) list.erase(std::remove_if(list.begin(), list.end(), func), list.end());

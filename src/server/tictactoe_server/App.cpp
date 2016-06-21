@@ -233,6 +233,10 @@ void App::not_playagain(Player * p, InPacket * in)
 	if (p->_to->_restart == false)
 		return;
 
+	auto p1 = p;
+	auto p2 = p->_to;
+	not_golobby(p);
+	start_game(p, p2);
 }
 
 void App::not_golobby(Player * p)
