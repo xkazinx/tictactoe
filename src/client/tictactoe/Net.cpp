@@ -25,7 +25,7 @@ void Net::tick()
 		switch (ev.type) {
 		case Socket::Event::Connect:
 		{
-			cout << "Connected\n";
+			cout << "Connected to server\n";
 			ev.peer->data = nullptr;
 			connected();
 			break;
@@ -33,14 +33,14 @@ void Net::tick()
 
 		case Socket::Event::Packet:
 		{
-			cout << "Packet\n";
+			cout << "Packet received\n";
 			msg_process(new InPacket(ev.packet));
 			break;
 		}
 
 		case Socket::Event::Disconnect:
 		{
-			cout << "Disconnected\n";
+			cout << "Disconnected from server\n";
 			delete ev.peer->data;
 			ev.peer->data = nullptr;
 			break;
@@ -102,7 +102,7 @@ void Net::connected()
 
 	OutPacket out(name.size() + 8);
 	out.write(Msg::Auth, name);
-	out.send(_sock.get());
+	send(&out);
 }
 
 void Net::not_auth(InPacket * in)
@@ -116,8 +116,11 @@ void Net::not_auth(InPacket * in)
 void Net::not_players(InPacket * in)
 {
 	s_main->_players.clear();
+
 	u16 sz;
 	in->read(sz);
+
+	//Reading player names from packet
 	for (int i = 0; i < sz; i++)
 	{
 		string name;
@@ -129,6 +132,7 @@ void Net::not_players(InPacket * in)
 		s_main->_players.emplace_back(name);
 	}
 
+	//Adding buttons to the box
 	s_main->_scroll_box->RemoveAll();
 	for (auto & name : s_main->_players)
 	{

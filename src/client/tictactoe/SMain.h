@@ -63,6 +63,9 @@ public:
 	void not_golobby();
 	sfg::Label::Ptr _end_label;
 	void not_gameended();
+	sf::Sprite _background;
+	sf::Texture texture;
+
 };
 
 extern SMain * s_main;

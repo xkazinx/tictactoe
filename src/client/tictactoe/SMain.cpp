@@ -9,9 +9,9 @@
 
 SMain::SMain() : _entry_name(sfg::Entry::Create())
 {
-
+	texture.loadFromFile("sprites/background.jpg");
+	_background.setTexture(texture);
 }
-
 
 SMain::~SMain()
 {
@@ -189,7 +189,7 @@ void SMain::initialize() {
 }
 
 void SMain::display() const {
-
+	_wnd->draw(_background);
 }
 
 void SMain::click(ButtonID id)
@@ -327,11 +327,10 @@ void SMain::SelectPosition(int x, int y)
 	if (s == "X" || s == "O")
 		return;
 
-	cout << "Selecciono posicion " << x << y << std::endl;
+	cout << "Sent position " << x << "/" << y << "\n";
 	OutPacket out(16);
 	out.write(Msg::Position, x, y);
 	g_net.send(&out);
-	//_btn[x][y]->SetLabel("X");
 }
 
 void SMain::update_turn_label()
@@ -340,7 +339,7 @@ void SMain::update_turn_label()
 	if (_is_turn)
 		s = "It's your turn";
 	else
-		s = "It's your opponent's turn";
+		s = "It's " + g_player._name + "'s turn";
 
 	_turn_label->SetText(s);
 }
@@ -366,7 +365,7 @@ void SMain::not_position(InPacket * in)
 		{
 			string identifier;
 			in->read(identifier);
-			cout << x << "/" << y << "Received identifier " << identifier << std::endl;
+			cout << "Refresh positions\n";
 			_btn[x][y]->SetLabel(identifier);
 		}
 	}
@@ -393,9 +392,6 @@ void SMain::not_winner(InPacket * in)
 	_end_label->SetText(s2);
 
 	toggle_window(getWnd(Windows::Winner), true);
-	//toggle_window(getWnd(Windows::Game), false);
-
-	getWnd(Windows::Winner)->SetHierarchyLevel(0);
 }
 
 void SMain::not_golobby()
@@ -419,6 +415,4 @@ void SMain::not_gameended()
 	_end_label->SetText(s2);
 
 	toggle_window(getWnd(Windows::Winner), true);
-	//toggle_window(getWnd(Windows::Game), false);
-	getWnd(Windows::Winner)->SetHierarchyLevel(0);
 }

@@ -13,6 +13,7 @@ public:
 	void not_auth(InPacket * in);
 	void not_players(InPacket * in);
 	void send(OutPacket * out);
+
 	Socket::Handler _sock;
 };
 
