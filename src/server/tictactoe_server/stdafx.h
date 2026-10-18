@@ -14,10 +14,4 @@
 #include <ctime.h>
 extern Time Clock;
 
-#include <iostream>
-#define cout std::cout
-#include "enet/enet.h"
-#include "packet.h"
-#include "enet/Socket.h"
-
-// TODO: reference additional headers your program requires here
+using std::cout;

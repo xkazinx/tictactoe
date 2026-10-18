@@ -4,18 +4,20 @@ class Player;
 class App
 {
 public:
+	bool _running = true;
+
 	void init();
-	void msg_process(ENetPeer * peer, InPacket * in);
-	void not_auth(Player * p, InPacket * in);
+	void msg_process(ENetPeer * peer, IPkt * in);
+	void not_auth(Player * p, IPkt * in);
 	void tick();
-	void send(Player * p, OutPacket * out);
 	void update_players(Player * p);
-	void not_selectplayer(Player * p, InPacket * in);
+	void broadcast_players();
+	void not_selectplayer(Player * p, IPkt * in);
 	void start_game(Player * p1, Player * p2);
-	void not_position(Player * p, InPacket * in);
+	void not_position(Player * p, IPkt * in);
 	void update_board(Player * p);
 
-	void not_playagain(Player * p, InPacket * in);
+	void not_playagain(Player * p);
 	void not_golobby(Player * p);
 };
 

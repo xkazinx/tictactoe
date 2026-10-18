@@ -1,0 +1,83 @@
+# Log in: every option of the Authentication window and its messages.
+# node src\dep\kazilib\testerino\tt.js run src\tests\testerino\login.tt
+include lib\server.tt
+include lib\client.tt SLOT=1
+
+shot 01_login
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\01_login.png
+
+# An empty nickname: a message, Ok back to the log in
+press Log In
+waitfor window=Msg 5000
+expect ok
+state
+expect data.msg ~ type a nickname
+expect data.msg_back == LogIn
+shot 02_empty_name
+image ${CHECKOUT}\testerino\client_1\shots\02_empty_name.png
+press Ok
+waitfor window=LogIn 5000
+expect ok
+
+# Spaces only count as empty; Escape closes the message as Ok does
+press name
+type
+key enter
+waitfor window=Msg 5000
+expect ok
+key escape
+waitfor window=LogIn 5000
+expect ok
+key backspace 10
+
+# Enter logs in; spaces at either end are dropped
+type   alice
+key enter
+waitfor window=Select 10000
+expect ok
+state
+expect data.name == alice
+expect data.entry == alice
+expect data.lobby_title ~ you are alice
+expect data.players.length == 0
+widgets Select
+expect ok
+shot 03_lobby_alone
+image ${CHECKOUT}\testerino\client_1\shots\03_lobby_alone.png
+
+# A second client with the same name: refused, back to the log in with the name kept
+include lib\client.tt SLOT=2
+press name
+type alice
+press Log In
+waitfor window=Msg 10000
+expect ok
+state
+expect data.msg ~ already in use
+expect data.connected == false
+shot 04_name_taken
+image ${CHECKOUT}\testerino\client_2\shots\04_name_taken.png
+press Ok
+waitfor window=LogIn 5000
+expect ok
+state
+expect data.entry == alice
+
+# The entry stops at 32 characters
+key backspace 5
+type bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+state
+expect data.entry.length == 32
+
+# Then a free name logs in, and alice's lobby lists it
+key backspace 32
+type bob
+press Log In
+waitfor window=Select 10000
+expect ok
+client_1: waitfor players=bob 5000
+expect ok
+client_1: shot 05_lobby_bob
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\05_lobby_bob.png

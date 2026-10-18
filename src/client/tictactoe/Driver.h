@@ -5,7 +5,7 @@
 class Driver
 {
 public:
-	uPtr<sf::RenderWindow> _wnd;
+	unique_ptr<sf::RenderWindow> _wnd;
 	sf::RenderWindow * get(){ return _wnd.get(); }
 
 	void init();

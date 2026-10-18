@@ -1,0 +1,6 @@
+[submodule "src/dep/kazilib"]
+	path = src/dep/kazilib
+	url = ../kazilib.git
+[submodule "src/dep/SFGUI"]
+	path = src/dep/SFGUI
+	url = https://github.com/TankOs/SFGUI.git

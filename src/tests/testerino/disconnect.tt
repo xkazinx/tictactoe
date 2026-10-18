@@ -1,0 +1,65 @@
+# Lost connections: an opponent dropped mid-game, a picked player gone, the
+# server gone, a server that is not there, and logging in again after.
+# node src\dep\kazilib\testerino\tt.js run src\tests\testerino\disconnect.tt
+include lib\server.tt
+include lib\client.tt SLOT=1 NAME=alice
+include lib\client.tt SLOT=2 NAME=bob
+
+# bob dropped by the server mid-game: alice told, back to the lobby
+client_1: waitfor players~bob 5000
+client_1: press player_bob
+client_1: waitfor window=Game 5000
+expect ok
+server: kick bob
+expect ok
+client_1: waitfor window=Msg 15000
+expect ok
+client_1: state
+expect data.msg == bob left the game.
+client_2: waitfor window=Msg 15000
+expect ok
+client_2: state
+expect data.msg_title == Disconnected
+expect data.msg_back == LogIn
+client_2: shot 01_disconnected
+expect ok
+image ${CHECKOUT}\testerino\client_2\shots\01_disconnected.png
+
+# bob logs in again from the log in
+client_2: press Ok
+client_2: waitfor window=LogIn 5000
+expect ok
+client_2: state
+expect data.entry == bob
+client_2: press Log In
+client_2: waitfor window=Select 10000
+expect ok
+client_1: press Ok
+client_1: waitfor players=bob 5000
+expect ok
+
+# The whole server gone: both get the Disconnected message
+stop server
+client_1: waitfor window=Msg 20000
+expect ok
+client_1: state
+expect data.msg_title == Disconnected
+expect data.connected == false
+
+# No server at all: a log in ends in the message instead of waiting for ever
+client_1: press Ok
+client_1: waitfor window=LogIn 5000
+client_1: press Log In
+client_1: waitfor window=Connecting 5000
+expect ok
+client_1: shot 02_connecting
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\02_connecting.png
+client_1: waitfor window=Msg 20000
+expect ok
+client_1: state
+expect data.msg ~ could not be made
+
+# The window's X button ends the program
+client_2: close
+expect ok

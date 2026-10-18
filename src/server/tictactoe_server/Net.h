@@ -2,7 +2,7 @@
 class Net
 {
 public:
-	Socket::Handler _sock;
+	unique_ptr<SocketHandler> _sock;
 	void tick();
 	void init();
 };

@@ -21,7 +21,7 @@ Player * PlayerMgr::find(ENetPeer * peer)
 	return nullptr;
 }
 
-Player * PlayerMgr::find(string & name)
+Player * PlayerMgr::find(const string & name)
 {
 	for (auto p : _list)
 	{
@@ -37,7 +37,7 @@ void PlayerMgr::add(ENetPeer * peer)
 {
 	auto p = new Player;
 	p->_peer = peer;
-	_list.emplace_back(p);
+	_list += p;
 }
 
 void PlayerMgr::remove(ENetPeer * peer)

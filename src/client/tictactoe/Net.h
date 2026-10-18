@@ -1,6 +1,5 @@
 #pragma once
 
-class InPacket;
 class Net
 {
 public:
@@ -8,13 +7,13 @@ public:
 	~Net();
 	void init();
 	void tick();
-	void msg_process(InPacket * in);
+	void msg_process(IPkt * in);
 	void connected();
-	void not_auth(InPacket * in);
-	void not_players(InPacket * in);
-	void send(OutPacket * out);
+	void not_auth(IPkt * in);
+	void not_players(IPkt * in);
+	void Send(const OPktPtr & out);
 
-	Socket::Handler _sock;
+	unique_ptr<SocketHandler> _sock;
 };
 
 extern Net g_net;

@@ -1,0 +1,19 @@
+# A tictactoe client in slot SLOT on the server of lib\server.tt, behind the
+# windows in use (background). With NAME (not -) it is logged in and waits in the lobby.
+# Stopped at the end of the routine that includes it.
+default SLOT=1
+default PORT=6990
+default NAME=-
+start client_${SLOT} cwd=${CHECKOUT}\deploy exe=${CHECKOUT}\deploy\tictactoe.exe timeout=30000 -- testerino=${SLOT} port=${PORT} background title=t${SLOT}
+use client_${SLOT}
+waitfor window=LogIn 10000
+expect ok
+if ${NAME} != -
+  press name
+  type ${NAME}
+  press Log In
+  waitfor window=Select 10000
+  expect ok
+  waitfor name=${NAME} 5000
+  expect ok
+end

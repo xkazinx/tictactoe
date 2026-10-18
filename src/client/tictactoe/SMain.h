@@ -7,10 +7,9 @@ class SMain : public Scene
 public:
 	SMain();
 	~SMain();
-	void initialize();
-	void display() const;
-
-	sfg::Entry::Ptr _entry_name;
+	void Initialize() override;
+	void Render() override;
+	void HandleEvent(const void * event) override; // an sf::Event
 
 	enum class Windows
 	{
@@ -23,8 +22,12 @@ public:
 		Winner,
 		Max
 	};
-	sfg::Window::Ptr _wnds[(int)Windows::Max];
-	sfg::Window::Ptr & getWnd(Windows id){ return _wnds[(int)id]; }
+	sfg::Window::Ptr _wnds[Under(Windows::Max)];
+	sfg::Window::Ptr & getWnd(const Windows id) { return _wnds[Under(id)]; }
+	bool is_shown(const Windows id) const { return _wnds[Under(id)] && _wnds[Under(id)]->IsLocallyVisible(); }
+	// Hides every window but `id` (None: all of them)
+	void show_only(const Windows id);
+	void center(const Windows id);
 
 	enum class ButtonID
 	{
@@ -34,38 +37,68 @@ public:
 		Lobby,
 	};
 
-	void click(ButtonID id);
+	void click(const ButtonID id);
 	void enter_lobby();
 
-	Vector<string> _players;
+	// Log in
+	sfg::Entry::Ptr _entry_name;
+	sfg::Label::Ptr _connecting_label;
+	void focus_name();
 
+	// Lobby
+	struct LobbyPlayer
+	{
+		string _name;
+		bool _in_game = false;
+	};
+	vector<LobbyPlayer> _players;
 	sfg::Box::Ptr _scroll_box;
+	void set_players(vector<LobbyPlayer> players);
+	void SelectPlayer(const string & name);
+
+	// Messages: Ok goes back to _msg_back
 	sfg::Label::Ptr _msg_content;
 	sfg::Frame::Ptr _msg_title;
-	void set_notify(string title, string txt);
-	void not_playerexists();
-	void SelectPlayer(string name);
-	void not_startgame(InPacket * in);
+	Windows _msg_back = Windows::LogIn;
+	void show_msg(const string & title, const string & text, const Windows back);
 
-	sfg::Button::Ptr _btn[3][3];
-	void SelectPosition(int x, int y);
-
+	// Game
+	sfg::Button::Ptr _btn[3][3]; // [row][column]
+	sfg::Label::Ptr _vs_label;
 	sfg::Label::Ptr _turn_label;
-	bool _is_turn;
-	void update_turn_label();
+	bool _is_turn = false;
+	bool _game_finished = false;
 	string _identifier;
-	void not_position(InPacket * in);
-	void not_playeringame();
-	Msg _last_msg;
-	bool _game_finished;
-	void not_winner(InPacket * in);
-	string _winner_name;
-	void not_golobby();
-	sfg::Label::Ptr _end_label;
-	void not_gameended();
-	sf::Sprite _background;
-	sf::Texture texture;
+	void SelectPosition(const int x, const int y);
+	void update_turn_label();
 
+	// End of a game
+	sfg::Label::Ptr _end_label;
+	sfg::Button::Ptr _btn_again;
+	string _winner_name;
+	bool _asked_again = false;
+	void show_end(const string & text);
+
+	// Packets
+	Msg _last_msg = Msg::Auth;
+	void not_playerexists();
+	void not_startgame(IPkt * in);
+	void not_position(IPkt * in);
+	void not_playeringame();
+	void not_playergone();
+	void not_winner(IPkt * in);
+	void not_gameended();
+	void not_playagain(IPkt * in);
+	void not_golobby();
+	void not_opponentleft(IPkt * in);
+	void not_disconnected();
+
+	sf::Texture texture;
+	optional<sf::Sprite> _background; // SFML 3: a sprite needs its texture to be made
 };
 
 extern SMain * s_main;
+
+// UTF-8 both ways between the wire / std::string and SFGUI's sf::String
+string ToUtf8(const sf::String & s);
+sf::String FromUtf8(const string & s);

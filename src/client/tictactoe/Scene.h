@@ -1,53 +1,37 @@
 #pragma once
-#include <array>
+#include <scene/manager.h>
 #include "SFGUI/Widgets.hpp"
 
-class Scene : public sf::Drawable
+// A scene on kazilib's scene manager (lib/shared/include/scene/manager.h):
+// Initialize on entry, Render each frame, HandleEvent with an sf::Event
+class Scene : public lib::scene::Base
 {
 public:
-	typedef uPtr<Scene> Ptr;
-
 	Scene();
-	virtual ~Scene();
 
-	enum ID {
-		None = -1,
-		Main,
-		Game,
-		Max
-	};
+	// Leaving it: its windows leave the desktop
+	void Deinitialize() override;
+	void toggle_window(sfg::Window::Ptr & wnd, const bool flag);
 
-	virtual void initialize() = 0;
-	virtual void tick() {}
-	virtual void deinitialize() { }
-	virtual void display() const = 0;
-	virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
-	virtual void handle_event(sf::Event & event) {}
-	void toggle_window(sfg::Window::Ptr & wnd, bool flag);
 	sf::RenderWindow * _wnd;
-
-	class Handler : public sf::Drawable{
-	public:
-		Handler() : _ptr(nullptr) {}
-		std::array<Ptr, ID::Max> m_list;
-
-		Scene * get();
-		Scene * get(ID id);
-
-		void set(Scene * scene);
-		void set(ID id);
-
-		bool is(ID id);
-
-		void init();
-		void tick();
-		virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
-		void clear();
-		void handle_event(sf::Event & event);
-
-	private:
-		Scene * _ptr;
-	};
 };
 
-extern Scene::Handler g_scene;
+class SMain;
+
+// The client's scenes and the manager that switches them
+struct Scenes
+{
+	lib::scene::Manager _mgr;
+	unique_ptr<SMain> _main;
+
+	// In Scene.cpp, where SMain is complete (unique_ptr checks the delete there)
+	Scenes();
+	~Scenes();
+
+	void Init();
+	void Clear();
+	void Render() { _mgr.Render(); }
+	void HandleEvent(const sf::Event & event) { _mgr.HandleEvent(&event); }
+};
+
+extern Scenes g_scene;

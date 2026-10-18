@@ -13,7 +13,7 @@ Driver g_wnd;
 GUI g_ui;
 
 #include "Scene.h"
-Scene::Handler g_scene; //Scene manager
+Scenes g_scene; // kazilib's scene manager and the scenes (destroyed before g_ui)
 
 #include <ctime.h>
 Time Clock;
@@ -29,7 +29,15 @@ Player g_player;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	g_app.init();
+	try
+	{
+		g_app.init();
+	}
+	catch (const std::exception & e)
+	{
+		std::cerr << "(!) exception: " << e.what() << std::endl;
+		return 1;
+	}
 	return 0;
 }
 

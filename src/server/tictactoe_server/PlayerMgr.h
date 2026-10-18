@@ -5,9 +5,9 @@ class PlayerMgr
 {
 public:
 	~PlayerMgr();
-	Vector<Player*> _list;
+	vector<Player*> _list;
 	Player * find(ENetPeer * peer);
-	Player * find(string & name);
+	Player * find(const string & name);
 	void add(ENetPeer * peer);
 	void remove(ENetPeer * peer);
 };

@@ -7,11 +7,10 @@ public:
 	~Player();
 
 	string _name;
-	ENetPeer * _peer;
-	bool _in_game, _is_turn, _restart;
-	Player * _to;
+	ENetPeer * _peer = nullptr;
+	bool _in_game = false, _is_turn = false, _restart = false;
+	Player * _to = nullptr;
 	string _identifier;
-	Game * _game;
-	void send(OutPacket * out);
+	Game * _game = nullptr;
+	void send(const OPktPtr & out);
 };
-

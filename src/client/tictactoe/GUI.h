@@ -8,7 +8,7 @@ public:
 
 	void init();
 
-	uPtr<sfg::SFGUI> _ptr;
+	unique_ptr<sfg::SFGUI> _ptr;
 	sf::Font _font;
 	sfg::Desktop _desk;
 };

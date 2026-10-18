@@ -1,75 +1,46 @@
 #pragma once
-#include <time.h>
+#ifndef NOMINMAX
 #define NOMINMAX
-#include <windows.h>
-#include <limits>
-#include <Mmsystem.h>
-
-typedef unsigned long u32;
-
-#ifdef max
-#undef max
 #endif
+#include <windows.h>
+#include <mmsystem.h>
+#include <cstdint>
+#pragma comment(lib, "winmm.lib")
 
-#define _ms					_s / 1000
-#define _s					* CLOCKS_PER_SEC
-#define _m					_s * 60
-#define _h					_m * 60
-//#define _d					_h * 24
-
+// The frame clock: milliseconds from timeGetTime, seeded once per frame
 class Time {
 public:
-	typedef u32 Val;
+	using Val = std::uint32_t;
 
 private:
-	Val _cachedTime;
-	Val _delta;
-	float _deltaf;
+	Val _cached_time = 0;
+	Val _delta = 0;
+	float _deltaf = 0.f;
 
 public:
-
-
 	Time() {
-		_deltaf = 0.f;
-		_delta = 0;
-		seed();
+		_cached_time = timeGetTime();
 	}
 
 	void seed() {
-		auto now = timeGetTime();
-		_deltaf = (now - _cachedTime) / 1000.f;
-		_delta = now - _cachedTime;
-		_cachedTime = now;
+		const Val now = timeGetTime();
+		_delta = now - _cached_time; // unsigned: wraps correctly past 49.7 days
+		_deltaf = _delta / 1000.f;
+		_cached_time = now;
 	}
 
-	Val now() {
-		return _cachedTime;
-	}
+	Val now() const { return _cached_time; }
+	Val delta() const { return _delta; }
+	float deltaf() const { return _deltaf; }
 
-	Val delta() {
-		return _delta;
-	}
+	Val elapsed(const Val t) const { return _cached_time - t; }
+	bool elapsed(const Val t, const Val period) const { return elapsed(t) >= period; }
 
-	float deltaf() {
-		return _deltaf;
-	}
-
-	Val elapsed(Val t) {
-		if(_cachedTime < t)
-			return t + (std::numeric_limits<Val>::max() - _cachedTime); // 32-bit looping
-		else
-			return (_cachedTime - t);
-	}
-
-	bool elapsed(Val t, Val period) {
-		return elapsed(t) >= period;
-	}
-
-	bool elapsed(Val & t, Val period, bool upd) {
-		auto res = elapsed(t) >= period;
-		if(res) {
+	// True once period passed since t, which then moves to now
+	bool elapsed(Val & t, const Val period, const bool upd) {
+		const bool res = elapsed(t) >= period;
+		if (res && upd)
 			t = now();
-		}
 		return res;
 	}
 };

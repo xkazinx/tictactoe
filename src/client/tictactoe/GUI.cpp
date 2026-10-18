@@ -9,8 +9,9 @@ void GUI::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 void GUI::init()
 {
-	_ptr = uMake<sfg::SFGUI>();
-	_font.loadFromFile("fonts/comic.ttf");
+	_ptr = make_unique<sfg::SFGUI>();
+	if (!_font.openFromFile("fonts/comic.ttf"))
+		cout << "fonts/comic.ttf not found: run the client from deploy\\\n";
 	//sfg::Context::Get().GetEngine().SetProperty<std::string>("*", "FontName", "fonts/comic.ttf");
 	//_desk.SetProperty("*", "FontName", "fonts/comic.ttf");
 }

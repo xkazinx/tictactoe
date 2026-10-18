@@ -1,2 +1,64 @@
 # tictactoe
-Tic Tac Toe online game using SFML, SFGUI and ENet
+Tic Tac Toe online game using SFML, SFGUI and kazilib (enet and its packet layer)
+
+## Libraries
+
+| Library | Version | Where |
+|---------|---------|-------|
+| kazilib | master (submodule) | `src/dep/kazilib`: enet 1.3.18, `net/packet.h` / `net/socket.h`, `scene/manager.h` (the scenes), `text/utf8.h` (names), Testerino (`testerino/tcore.h`, `tserver.h`, `tt.js`), `stdnames.h`, `initflags.h`, magic_enum (built as its `ml` version through `kazilib.vcxproj`) |
+| SFML | 3.1.0 x86 | `src/dep/SFML-3.1.0`: a junction to `D:\code\kazilib\SFML-3.1.0`, or the official vc17 32-bit release |
+| SFGUI | 1.0.1 (submodule) | `src/dep/SFGUI`, built by CMake into `src/dep/SFGUI-1.0.1` |
+
+## Building
+
+Visual Studio 2026 (v145 toolset), CMake 3.22+.
+
+```
+git clone --recurse-submodules https://github.com/xkazinx/tictactoe.git
+powershell -ExecutionPolicy Bypass -File build.ps1
+```
+
+`build.ps1` runs `setup.ps1` (submodules, SFML, SFGUI) and builds `src\tictactoe.sln`
+Release|Win32 with the 64-bit-hosted compiler and linker (x86 output): the server to
+`server\tictactoe_server.exe`, the client to `deploy\tictactoe.exe` with its DLLs.
+`-Debug` builds Debug instead.
+
+## Testing
+
+Two kinds of tests, both from the checkout's root:
+
+- **Protocol** (headless, no windows): `src\tests\run_protocol_test.cmd` builds
+  `src\tests\protocol_test.cpp`, starts the server, plays two clients on kazilib's
+  socket through log in, a taken name, a missing player, a win, the rematch, a
+  draw, Go to Lobby and a disconnect, and stops the server. Exit code: failures.
+- **The windows, through Testerino** (kazilib's test bridge,
+  `src\dep\kazilib\testerino\README.md`): the client takes `testerino=<slot>`, the
+  server `testerino`, only in a source checkout (`src\tictactoe.sln`). Routines in
+  `src\tests\testerino\` start a server on port 6990 and the clients behind your
+  windows (`background`), press the real widgets, type, check the answers and take
+  screenshots:
+
+  ```
+  node src\dep\kazilib\testerino\tt.js run src\tests\testerino\login.tt
+  node src\dep\kazilib\testerino\tt.js run src\tests\testerino\game.tt
+  node src\dep\kazilib\testerino\tt.js run src\tests\testerino\disconnect.tt
+  node src\dep\kazilib\testerino\tt.js run src\tests\testerino\lobby_widgets.tt
+  ```
+
+  Reports in `testerino\reports\`, screenshots in `testerino\client_<slot>\shots\`.
+  Client verbs: `state`, `widgets`, `press <id | button text>`, `click x y`,
+  `type`, `key`, `shot`, `close`, `quit`; conditions for `waitfor`: `window=`,
+  `msg~`, `end~`, `board=`, `turn=`, `name=`, `players~`. Server verbs: `players`,
+  `board <name>`, `kick <name>`, `quit`; conditions `players=`, `in_game=`.
+  `help` on either lists them.
+
+## Running
+
+Start `server\tictactoe_server.exe`, then `deploy\tictactoe.exe` (run from `deploy\`, it
+reads `fonts\comic.ttf`) twice, log in with two names (Enter logs in) and pick the
+other player in the lobby; players in a game are marked. The one who picks plays X
+and starts. After a game, Play Again on both starts a rematch (the other is told),
+Go to Lobby ends it (the other is told too).
+The server address is `127.0.0.1:6987` by default: `tictactoe.exe ip=<host> port=<n>`
+(the server takes `port=<n>`), or an `init.json` next to the exe (`{"ip": "1.2.3.4"}`).
+`title=<text>` names a client's window; `background` opens it behind the others.

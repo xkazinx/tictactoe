@@ -1,0 +1,19 @@
+# Libraries fetched / built by setup.ps1
+/src/dep/SFML-3.1.0
+/src/dep/SFGUI-1.0.1
+# Intermediates
+/src/build/
+/src/.vs/
+*.user
+# Build output
+/deploy/*.exe
+/deploy/*.dll
+/deploy/*.pdb
+/deploy/*.lib
+/deploy/*.exp
+/deploy/*.old*
+/deploy/packet.log
+/deploy/exceptions/
+/server/
+# Testerino endpoints, shots and reports (the routines are in src/tests/testerino/)
+/testerino/

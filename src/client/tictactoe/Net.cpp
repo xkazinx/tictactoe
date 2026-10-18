@@ -5,54 +5,55 @@
 
 Net::Net()
 {
-	
 }
 
 void Net::init()
 {
-	_sock.create(Socket::Type::Client, _IP, _PORT, 1, 1);
+	_sock = make_unique<SocketHandler>(Socket::Type::Client, ServerIp(), ServerPort(), 1, 1);
+	cout << "Server: " << ServerIp() << ":" << ServerPort() << "\n";
 }
 
 Net::~Net()
 {
-	_sock.disconnect();
+	if (_sock)
+		_sock->Disconnect();
 }
 
 void Net::tick()
 {
 	ENetEvent ev;
-	while (_sock.get()->get(&ev) > 0) {
-		switch (ev.type) {
-		case Socket::Event::Connect:
+	for (auto e = _sock->Service(&ev); e != Socket::Event::None; e = _sock->Service(&ev))
+	{
+		switch (e)
 		{
+		case Socket::Event::Connect:
 			cout << "Connected to server\n";
-			ev.peer->data = nullptr;
 			connected();
 			break;
-		}
 
 		case Socket::Event::Packet:
 		{
-			cout << "Packet received\n";
-			msg_process(new InPacket(ev.packet));
+			IPkt in(ev.packet); // destroys the enet packet when read
+			msg_process(&in);
 			break;
 		}
 
 		case Socket::Event::Disconnect:
-		{
 			cout << "Disconnected from server\n";
-			delete ev.peer->data;
-			ev.peer->data = nullptr;
+			if (s_main)
+				s_main->not_disconnected();
 			break;
-		}
+
+		default:
+			break;
 		}
 	}
 }
 
-void Net::msg_process(InPacket * in)
+void Net::msg_process(IPkt * in)
 {
 	Msg msg;
-	in->read(msg);
+	in->Read(msg);
 	s_main->_last_msg = msg;
 	switch (msg)
 	{
@@ -91,58 +92,55 @@ void Net::msg_process(InPacket * in)
 	case Msg::GameEnded:
 		s_main->not_gameended();
 		break;
-	}
 
-	delete in;
+	case Msg::PlayAgain:
+		s_main->not_playagain(in);
+		break;
+
+	case Msg::PlayerGone:
+		s_main->not_playergone();
+		break;
+
+	case Msg::OpponentLeft:
+		s_main->not_opponentleft(in);
+		break;
+
+	default:
+		break;
+	}
 }
 
 void Net::connected()
 {
-	string name = s_main->_entry_name->GetText();
-
-	OutPacket out(name.size() + 8);
-	out.write(Msg::Auth, name);
-	send(&out);
+	Send(OPkt::Create(Msg::Auth, ToUtf8(s_main->_entry_name->GetText())));
 }
 
-void Net::not_auth(InPacket * in)
+void Net::not_auth(IPkt * in)
 {
-	s_main->_players.clear();
-	in->read(g_player._name);
-
+	in->Read(g_player._name);
 	s_main->enter_lobby();
 }
 
-void Net::not_players(InPacket * in)
+void Net::not_players(IPkt * in)
 {
-	s_main->_players.clear();
+	u16 sz = 0;
+	in->Read(sz);
 
-	u16 sz;
-	in->read(sz);
+	vector<SMain::LobbyPlayer> players;
 
-	//Reading player names from packet
 	for (int i = 0; i < sz; i++)
 	{
-		string name;
-		in->read(name);
+		SMain::LobbyPlayer p;
+		in->Read(p._name, p._in_game);
 
-		if (name == g_player._name)
-			continue;
-
-		s_main->_players.emplace_back(name);
+		if (p._name != g_player._name)
+			players += p;
 	}
 
-	//Adding buttons to the box
-	s_main->_scroll_box->RemoveAll();
-	for (auto & name : s_main->_players)
-	{
-		auto btn = sfg::Button::Create(name);
-		btn->GetSignal(sfg::Widget::OnLeftClick).Connect(std::bind(&SMain::SelectPlayer, s_main, name));
-		s_main->_scroll_box->Pack(btn);
-	}
+	s_main->set_players(std::move(players));
 }
 
-void Net::send(OutPacket * out)
+void Net::Send(const OPktPtr & out)
 {
-	out->send(_sock.get());
+	out->Send(_sock->Get());
 }

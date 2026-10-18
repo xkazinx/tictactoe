@@ -1,0 +1,6 @@
+# A tictactoe server of this checkout with its bridge, on its own port (not the
+# 6987 a player's server uses). Stopped at the end of the routine that includes it.
+default PORT=6990
+start server cwd=${CHECKOUT}\server exe=${CHECKOUT}\server\tictactoe_server.exe timeout=20000 -- testerino port=${PORT}
+server: ping
+expect data.port == ${PORT}

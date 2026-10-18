@@ -1,0 +1,20 @@
+# The lobby's player buttons: where the bridge reports them, and a click on one
+# starting a game (checks press inside the lobby's scrolled viewport).
+# node src\dep\kazilib\testerino\tt.js run src\tests\testerino\lobby_widgets.tt
+include lib\server.tt
+include lib\client.tt SLOT=1 NAME=alice
+include lib\client.tt SLOT=2 NAME=bob
+client_1: waitfor players~bob 5000
+expect ok
+client_1: widgets Select
+expect ok
+expect data.widgets.2.id == player_bob
+expect data.widgets.2.y > 200
+expect data.widgets.2.x > 200
+client_1: shot lobby_widgets
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\lobby_widgets.png
+client_1: press player_bob
+expect ok
+client_1: waitfor window=Game 5000
+expect ok

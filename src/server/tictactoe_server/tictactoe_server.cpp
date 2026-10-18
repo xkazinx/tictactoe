@@ -2,6 +2,7 @@
 #include "App.h"
 #include "Net.h"
 #include "PlayerMgr.h"
+#include "Testerino.h"
 
 App g_app;
 Net g_net;
@@ -10,7 +11,7 @@ Time Clock;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	testerino::Prepare();
 	g_app.init();
 	return 0;
 }
-

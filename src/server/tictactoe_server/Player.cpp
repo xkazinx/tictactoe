@@ -4,8 +4,6 @@
 
 Player::Player()
 {
-	_in_game = false;
-	_to = nullptr;
 }
 
 
@@ -13,7 +11,7 @@ Player::~Player()
 {
 }
 
-void Player::send(OutPacket * out)
+void Player::send(const OPktPtr & out)
 {
-	out->send(_peer);
+	out->Send(_peer);
 }

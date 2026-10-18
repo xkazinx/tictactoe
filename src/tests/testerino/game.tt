@@ -1,0 +1,178 @@
+# A whole match through the windows: the lobby, the board, a win, the rematch
+# (Play Again on both, the notice to the other), a draw, Go to Lobby and its
+# message, a busy player and every button's answer.
+# node src\dep\kazilib\testerino\tt.js run src\tests\testerino\game.tt
+include lib\server.tt
+include lib\client.tt SLOT=1 NAME=alice
+include lib\client.tt SLOT=2 NAME=bob
+include lib\client.tt SLOT=3 NAME=carol
+
+# alice picks bob: alice is X and starts
+client_1: waitfor players~bob 5000
+expect ok
+client_1: press player_bob
+expect ok
+client_1: waitfor window=Game 10000
+expect ok
+client_2: waitfor window=Game 10000
+expect ok
+client_1: state
+expect data.mark == X
+expect data.turn == true
+expect data.vs ~ You (X)  vs  bob (O)
+expect data.turn_label ~ your turn
+client_2: state
+expect data.mark == O
+expect data.turn == false
+expect data.turn_label ~ alice's turn
+
+# carol sees both busy, and picking one gets the in-game message, Ok back to the lobby
+client_3: waitfor players=alice*,bob* 5000
+expect ok
+client_3: shot 01_lobby_busy
+expect ok
+image ${CHECKOUT}\testerino\client_3\shots\01_lobby_busy.png
+client_3: press player_alice
+expect ok
+client_3: waitfor window=Msg 5000
+expect ok
+client_3: state
+expect data.msg ~ already in a game
+client_3: press Ok
+client_3: waitfor window=Select 5000
+expect ok
+
+# Out of turn: bob's click does nothing
+client_2: press cell11
+client_2: wait 300
+client_2: state
+expect data.board == .../.../...
+
+# alice takes the top row, bob the middle; a taken cell does nothing
+client_1: press cell00
+client_2: waitfor turn=1 5000
+expect ok
+client_2: press cell00
+client_2: wait 300
+client_2: state
+expect data.turn == true
+client_2: press cell10
+client_1: waitfor turn=1 5000
+expect ok
+client_1: press cell01
+client_2: waitfor turn=1 5000
+expect ok
+client_2: press cell11
+client_1: waitfor turn=1 5000
+expect ok
+client_1: shot 02_board
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\02_board.png
+client_1: press cell02
+
+client_1: waitfor window=Winner 5000
+expect ok
+client_2: waitfor window=Winner 5000
+expect ok
+client_1: state
+expect data.end == You won!
+expect data.board == XXX/OO./...
+expect data.finished == true
+client_2: state
+expect data.end == alice won the game!
+client_1: shot 03_won
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\03_won.png
+client_2: shot 03_lost
+expect ok
+image ${CHECKOUT}\testerino\client_2\shots\03_lost.png
+
+# The board takes no clicks once it is over
+client_2: press cell22
+client_2: wait 300
+client_2: state
+expect data.board == XXX/OO./...
+
+# Play Again: bob first, alice is told, the button is off for bob; then alice
+client_2: press Play Again
+client_2: state
+expect data.again_enabled == false
+expect data.end ~ Waiting for alice
+client_1: waitfor end~bob wants to play again 5000
+expect ok
+client_1: shot 04_rematch_asked
+expect ok
+image ${CHECKOUT}\testerino\client_1\shots\04_rematch_asked.png
+client_2: press Play Again
+client_2: wait 300
+client_1: press Play Again
+client_1: waitfor window=Game 5000
+expect ok
+client_1: waitfor board=.../.../... 5000
+expect ok
+client_2: waitfor turn=1 5000
+expect ok
+client_2: state
+expect data.mark == X
+expect data.again_enabled == true
+client_1: state
+expect data.windows == Game
+
+# A draw (bob is X): X O X / X O O / O X X
+client_2: press cell00
+client_1: waitfor turn=1 5000
+client_1: press cell01
+client_2: waitfor turn=1 5000
+client_2: press cell02
+client_1: waitfor turn=1 5000
+client_1: press cell11
+client_2: waitfor turn=1 5000
+client_2: press cell10
+client_1: waitfor turn=1 5000
+client_1: press cell12
+client_2: waitfor turn=1 5000
+client_2: press cell21
+client_1: waitfor turn=1 5000
+client_1: press cell20
+client_2: waitfor turn=1 5000
+client_2: press cell22
+client_1: waitfor window=Winner 5000
+expect ok
+client_1: state
+expect data.end == It's a draw!
+expect data.board == XOX/XOO/OXX
+client_2: shot 05_draw
+expect ok
+image ${CHECKOUT}\testerino\client_2\shots\05_draw.png
+
+# Go to Lobby: alice back in the lobby, bob gets the message, Ok takes him there
+client_1: press Go to Lobby
+client_1: waitfor window=Select 5000
+expect ok
+client_2: waitfor window=Msg 5000
+expect ok
+client_2: state
+expect data.msg == alice left the game.
+expect data.msg_back == Select
+client_2: shot 06_opponent_left
+expect ok
+image ${CHECKOUT}\testerino\client_2\shots\06_opponent_left.png
+client_2: press Ok
+client_2: waitfor window=Select 5000
+expect ok
+client_3: waitfor players=alice,bob 5000
+expect ok
+
+# carol and bob play; a list refresh while a message is up does not break its Ok
+client_3: press player_bob
+client_2: waitfor window=Game 5000
+expect ok
+client_1: press player_carol
+client_1: waitfor window=Msg 5000
+expect ok
+client_1: state
+expect data.msg ~ already in a game
+client_3: press cell00
+client_1: press Ok
+client_1: waitfor window=Select 5000
+expect ok
