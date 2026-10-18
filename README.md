@@ -66,3 +66,12 @@ Go to Lobby ends it (the other is told too).
 The server address is `127.0.0.1:6987` by default: `tictactoe.exe ip=<host> port=<n>`
 (the server takes `port=<n>`), or an `init.json` next to the exe (`{"ip": "1.2.3.4"}`).
 `title=<text>` names a client's window; `background` opens it behind the others.
+
+---
+
+## Original README (2016-06-19, commit 628af25)
+
+The README as its author wrote it, kept word for word under the new one:
+
+# tictactoe
+Tic Tac Toe online game using SFML, SFGUI and ENet

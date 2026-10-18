@@ -14,5 +14,8 @@
   (`node src\dep\kazilib\testerino\tt.js run src\tests\testerino\<name>.tt`), all to 0 failed after a change they
   cover. Run test programs outside the command sandbox (the sandbox ends or hides the clients it starts).
 - **Protocol:** `src\shared\tdef.h` `Msg` (u8) is append-only; a packet's writer and reader change together.
+- **Original README stays:** README.md keeps its 2016 original word for word at its end (`## Original README`);
+  changes edit only the part above it (`D:\code\CLAUDE.md`, "Original READMEs stay": a README unchanged for more
+  than six months keeps its original underneath when it is rewritten).
 - **Names:** members `_name`, functions and classes `PascalCase` for new code (`D:\code\hb\hbmillennium_7\CLAUDE.md`
   has the full rules every project follows).
