@@ -20,6 +20,11 @@ Release only, names `_member` / `PascalCase`, `g_` globals, kazilib first, commi
 8. "prepare md for another account to continue and open txt with session name": this file.
 9. "push all worked on repos", "add a claude.md in D:\code folder which explains what upd is for next projects",
    "push the tictactoe to github with first commit name "AI CODE" ...". **Done.**
+10. A FASTBuild tool in kazilib for every project (`kazilib\fastbuild\`: `fbuild_gen.ps1` generates the `.bff` from
+    the `.vcxproj` files through MSBuild's evaluation, `build.ps1` runs it); tictactoe builds with it
+    (`src\fastbuild.json`); every CLAUDE.md: Release, x86, 64-bit-hosted tools, Debug only when asked. **Done and
+    pushed** ("push so fastbuild works everywhere with the new tools and new projects use it"): kazilib `7c5cb40`,
+    hb_lib `6d87c5f`, hbmillennium `cf40dc67`, hbempire `739f65b2`, tictactoe (this commit).
 
 ## State of each repo (all pushed, "push all worked on repos")
 

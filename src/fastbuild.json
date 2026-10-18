@@ -1,0 +1,8 @@
+{
+  "projects": [
+    { "vcxproj": "dep/kazilib/kazilib.vcxproj", "alias": "kazilib" },
+    { "vcxproj": "server/tictactoe_server/tictactoe_server.vcxproj", "alias": "server" },
+    { "vcxproj": "client/tictactoe/tictactoe.vcxproj", "alias": "client" }
+  ],
+  "workers": [ "192.168.0.204" ]
+}

@@ -11,17 +11,21 @@ Tic Tac Toe online game using SFML, SFGUI and kazilib (enet and its packet layer
 
 ## Building
 
-Visual Studio 2026 (v145 toolset), CMake 3.22+.
+Visual Studio 2026 (v145 toolset), CMake 3.22+ (for SFGUI). FASTBuild v1.20 is found
+next to the checkouts or downloaded once.
 
 ```
 git clone --recurse-submodules https://github.com/xkazinx/tictactoe.git
 powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
-`build.ps1` runs `setup.ps1` (submodules, SFML, SFGUI) and builds `src\tictactoe.sln`
-Release|Win32 with the 64-bit-hosted compiler and linker (x86 output): the server to
-`server\tictactoe_server.exe`, the client to `deploy\tictactoe.exe` with its DLLs.
-`-Debug` builds Debug instead.
+`build.ps1` runs `setup.ps1` (submodules, SFML, SFGUI), then kazilib's FASTBuild runner
+(`src\dep\kazilib\fastbuild\`) on `src\fastbuild.json`: Release, x86, with the 64-bit-hosted
+compiler and linker, distributed to the workers that answer (MSBuild when FASTBuild is
+missing). The FASTBuild config is generated from the `.vcxproj` files. Output: the server
+`server\tictactoe_server.exe`, the client `deploy\tictactoe.exe` with its DLLs.
+`build.ps1 client` / `server` builds one; `-Configuration Debug` builds Debug (only when needed).
+Visual Studio builds the same thing from `src\tictactoe.sln`.
 
 ## Testing
 
