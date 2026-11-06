@@ -1,6 +1,8 @@
 # tictactoe
 Tic Tac Toe online game using SFML, SFGUI and kazilib (enet and its packet layer)
 
+**Made without AI** until the first Claude commit (a1a6878, 2026-10-18); AI was used after that for the updated deployment and this README.
+
 **Play it in your browser: https://kazin.dev/projects/tictactoe/**
 
 ![A won game: X takes the diagonal, "You won!" with Play Again and Go to Lobby](docs/screenshot.png)
