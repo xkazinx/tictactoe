@@ -8,7 +8,6 @@
 #include "targetver.h"
 
 #include <stdio.h>
-#include <tchar.h>
 
 #include <tdef.h>
 #include <SFML/Graphics.hpp>

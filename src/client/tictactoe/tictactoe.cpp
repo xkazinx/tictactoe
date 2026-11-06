@@ -27,7 +27,7 @@ SMain * s_main;
 #include "Player.h"
 Player g_player;
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
 	try
 	{

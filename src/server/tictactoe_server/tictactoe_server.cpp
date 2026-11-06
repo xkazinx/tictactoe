@@ -9,8 +9,12 @@ Net g_net;
 PlayerMgr g_players;
 Time Clock;
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
+	// A line at a time also when stdout is a pipe or a file (systemd's journal)
+	std::setvbuf(stdout, nullptr, _IOLBF, 1024);
+	std::cout.setf(std::ios::unitbuf);
+
 	testerino::Prepare();
 	g_app.init();
 	return 0;

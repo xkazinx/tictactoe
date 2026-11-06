@@ -5,6 +5,7 @@
 #include "Net.h"
 #include "Player.h"
 #include "PlayerMgr.h"
+#ifdef _WIN32
 #include <testerino/tserver.h>
 
 namespace testerino
@@ -140,3 +141,14 @@ namespace testerino
 			tcore::WriteFailed(tcore::CheckoutFromCwd() / "testerino", "server", reason, { reason });
 	}
 }
+#else
+// Linux (the deployed server): no bridge, the tests drive the Windows build
+namespace testerino
+{
+	void Prepare() {}
+	void Start() {}
+	void Poll() {}
+	void Stop() {}
+	void Failed(const string &) {}
+}
+#endif

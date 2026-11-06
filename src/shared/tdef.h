@@ -1,6 +1,8 @@
 #pragma once
+#ifdef _MSC_VER
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4018)
+#endif
 #include <cstdint>
 using u64 = std::uint64_t;
 using i64 = std::int64_t;
@@ -12,12 +14,15 @@ using u8 = std::uint8_t;
 using i8 = std::int8_t;
 
 // winsock2 before anything includes <windows.h> (initflags.h does), or windows.h
-// brings the old winsock.h and enet's winsock2.h redefines it all
+// brings the old winsock.h and enet's winsock2.h redefines it all. Linux (the
+// server) and the browser (the client, Emscripten) have neither.
+#ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <winsock2.h>
 #include <windows.h>
+#endif
 
 // kazilib: std names without std::, startup flags, enet and its packet layer
 #include <stdnames.h>

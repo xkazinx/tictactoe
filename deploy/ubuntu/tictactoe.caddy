@@ -1,0 +1,19 @@
+# tictactoe (github.com/xkazinx/tictactoe) at kazin.dev/projects/tictactoe: the web
+# build, and its WebSocket to the game server's gateway (tictactoe.service on
+# 127.0.0.1:6988). Written by deploy/ubuntu/install.sh. Imported inside the
+# kazin.dev site block (`import /etc/caddy/sites/kazin.dev.d/*.caddy`).
+redir /projects/tictactoe /projects/tictactoe/ permanent
+
+# The page's WebSocket (wss://kazin.dev/projects/tictactoe/ws): the gateway takes
+# the upgrade on any path
+handle /projects/tictactoe/ws {
+	reverse_proxy 127.0.0.1:6988
+}
+
+# The web build, with the prefix taken off; revalidated each visit (a new build
+# keeps its names)
+handle_path /projects/tictactoe/* {
+	root * /opt/tictactoe/web
+	header Cache-Control "no-cache"
+	file_server
+}

@@ -25,9 +25,18 @@ static sf::Rect<std::uint32_t> Cell(const std::uint32_t x, const std::uint32_t y
 
 SMain::SMain() : _entry_name(sfg::Entry::Create())
 {
-	// Optional art: the screen stays black without it
+	// The background behind every window (deploy\sprites\background.jpg, from
+	// art\background_1920x1080.jpg): scaled to cover the window, centred; the screen
+	// stays black without it
 	if (texture.loadFromFile("sprites/background.jpg"))
+	{
+		texture.setSmooth(true);
 		_background.emplace(texture);
+		const sf::Vector2f size(texture.getSize());
+		const float scale = std::max(res_x / size.x, res_y / size.y);
+		_background->setScale({ scale, scale });
+		_background->setPosition({ std::floor((res_x - size.x * scale) / 2.f), std::floor((res_y - size.y * scale) / 2.f) });
+	}
 }
 
 SMain::~SMain()
@@ -37,8 +46,9 @@ SMain::~SMain()
 void SMain::Initialize() {
 	using namespace sfg;
 
-	// Its widgets are made once; entering it again only shows the log in
-	if (!_init)
+	// Its widgets are made once (kazilib lib::Initializes: _init is "set up ran");
+	// entering it again only shows the log in
+	if (!InitOnce())
 	{
 		for (auto & wnd : _wnds)
 			g_ui._desk.Add(wnd);
@@ -46,7 +56,6 @@ void SMain::Initialize() {
 		show_only(Windows::LogIn);
 		return;
 	}
-	_init = false;
 
 	{
 		auto & wnd = getWnd(Windows::LogIn);

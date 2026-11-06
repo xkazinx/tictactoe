@@ -9,6 +9,13 @@ Net::Net()
 
 void Net::init()
 {
+#ifdef __EMSCRIPTEN__
+	// A browser reaches the server through its WebSocket gateway (kazilib
+	// net/ws_gateway.h, enet/websocket.cpp): ?ws=wss://host/path/ws, else the
+	// page's own folder + "ws"
+	if (const string ws = lib::init::Value("ws"); !ws.empty())
+		enet_ws_set_url(ws.c_str());
+#endif
 	_sock = make_unique<SocketHandler>(Socket::Type::Client, ServerIp(), ServerPort(), 1, 1);
 	cout << "Server: " << ServerIp() << ":" << ServerPort() << "\n";
 }

@@ -16,6 +16,16 @@ void Net::init()
 		std::exit(1);
 	}
 	cout << "Listening on port " << ServerPort() << "\n";
+
+	const u16 ws_port = (u16)lib::init::Number("ws", ServerPort() + 1);
+	if (ws_port)
+	{
+		std::error_code ec;
+		const auto web_dir = lib::exe::Dir() / "web";
+		const string web = lib::init::Value("web", std::filesystem::is_directory(web_dir, ec) ? web_dir.string() : string());
+		_ws.Start({ .bind = lib::init::Value("ws_bind", "127.0.0.1"), .port = ws_port,
+		            .enet_host = "127.0.0.1", .enet_port = ServerPort(), .channels = 1, .max_clients = 255, .web_root = web });
+	}
 }
 
 void Net::tick()

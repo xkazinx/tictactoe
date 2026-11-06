@@ -1,0 +1,23 @@
+# tictactoe's game server on the Ubuntu box (kazin.dev/projects/tictactoe):
+# ENet on UDP 6987 (native clients), browsers through its WebSocket gateway on
+# 127.0.0.1:6988 behind Caddy (tictactoe.caddy). Installed by install.sh.
+[Unit]
+Description=tictactoe game server (kazin.dev/projects/tictactoe)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tictactoe
+Group=tictactoe
+WorkingDirectory=/opt/tictactoe
+ExecStart=/opt/tictactoe/bin/tictactoe_server port=6987 ws=6988 ws_bind=127.0.0.1
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

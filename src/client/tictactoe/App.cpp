@@ -36,6 +36,14 @@ void App::loop()
 		g_net.tick();
 		handle_events();
 
+#ifdef __EMSCRIPTEN__
+		// A browser: one frame per pass; display() waits for the browser's next
+		// animation frame (the page's refresh), so nothing to wait for here
+		frame(Clock.elapsed(last_frame) / 1000.f);
+		last_frame = Clock.now();
+		continue;
+#endif
+
 		// One whole frame (clear, draw, present) every kFrameMs: presenting a cleared
 		// frame between them made the window flicker black
 		const Time::Val since = Clock.elapsed(last_frame);
