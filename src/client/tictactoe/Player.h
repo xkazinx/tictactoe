@@ -1,7 +1,6 @@
 #pragma once
-class Player
+struct Player
 {
-public:
 	string _name;
 	string _to_name;
 };

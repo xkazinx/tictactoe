@@ -1,8 +1,7 @@
 #pragma once
-class Game;
-class Player
+struct Game;
+struct Player
 {
-public:
 	Player();
 	~Player();
 

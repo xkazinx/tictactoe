@@ -1,9 +1,8 @@
 #pragma once
 
-class Player;
-class App
+struct Player;
+struct App
 {
-public:
 	bool _running = true;
 
 	void init();

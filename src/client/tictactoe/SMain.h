@@ -2,9 +2,8 @@
 #include "Scene.h"
 #include "SFGUI/Widgets.hpp"
 
-class SMain : public Scene
+struct SMain : Scene
 {
-public:
 	SMain();
 	~SMain();
 	void Initialize() override;

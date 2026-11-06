@@ -1,8 +1,7 @@
 #pragma once
 
-class Net
+struct Net
 {
-public:
 	Net();
 	~Net();
 	void init();

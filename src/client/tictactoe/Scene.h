@@ -4,9 +4,8 @@
 
 // A scene on kazilib's scene manager (lib/shared/include/scene/manager.h):
 // Initialize on entry, Render each frame, HandleEvent with an sf::Event
-class Scene : public lib::scene::Base
+struct Scene : lib::scene::Base
 {
-public:
 	Scene();
 
 	// Leaving it: its windows leave the desktop
@@ -16,7 +15,7 @@ public:
 	sf::RenderWindow * _wnd;
 };
 
-class SMain;
+struct SMain;
 
 // The client's scenes and the manager that switches them
 struct Scenes

@@ -1,9 +1,8 @@
 #pragma once
 
 //Game handler
-class App
+struct App
 {
-public:
 	static constexpr Time::Val kFrameMs = 1000 / 60;
 
 	void init();

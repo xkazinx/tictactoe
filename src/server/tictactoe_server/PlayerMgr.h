@@ -1,9 +1,8 @@
 #pragma once
 
-class Player;
-class PlayerMgr
+struct Player;
+struct PlayerMgr
 {
-public:
 	~PlayerMgr();
 	vector<Player*> _list;
 	Player * find(ENetPeer * peer);

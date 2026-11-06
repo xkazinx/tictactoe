@@ -1,9 +1,8 @@
 #pragma once
 #include "SFGUI/Desktop.hpp"
 
-class GUI : public sf::Drawable
+struct GUI : sf::Drawable
 {
-public:
 	virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 
 	void init();

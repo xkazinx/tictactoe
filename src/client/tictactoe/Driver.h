@@ -2,9 +2,8 @@
 
 
 //Container for SFML-Window
-class Driver
+struct Driver
 {
-public:
 	unique_ptr<sf::RenderWindow> _wnd;
 	sf::RenderWindow * get(){ return _wnd.get(); }
 
